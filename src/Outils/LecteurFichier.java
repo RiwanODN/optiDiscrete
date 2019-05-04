@@ -50,15 +50,15 @@ public class LecteurFichier {
                         int taille = Integer.parseInt(nombres[0]);
                         this.initialiserMatrices(taille);
                     }else{
-                        if(!this.matricePoidsRemplie && !this.matricePoidsEnCours){
-                            this.matricePoidsEnCours = true;
-                        }else if(this.matricePoidsEnCours){
-                            this.matricePoidsRemplie = true;
-                            this.matricePoidsEnCours = false;
+                        if(!this.matriceDistanceRemplie && !this.matriceDistanceEnCours){
+                            this.matriceDistanceEnCours = true;
+                        }else if(this.matriceDistanceEnCours){
+                            this.matriceDistanceRemplie = true;
+                            this.matriceDistanceEnCours = false;
 
                             ligneActuelle = 0;
 
-                            this.matriceDistanceEnCours = true;
+                            this.matricePoidsEnCours = true;
                         }
                     }
                 } else {
@@ -101,7 +101,7 @@ public class LecteurFichier {
     }
 
     public void afficherPoids(){
-        System.out.println("Matrice des poids : ");
+        System.out.println("Matrice des distance : ");
 
         for (int i = 0; i < this.poids.length; i++)
         {
@@ -115,7 +115,7 @@ public class LecteurFichier {
     }
 
     public void afficherDistances(){
-        System.out.println("Matrice des distances : ");
+        System.out.println("Matrice des poids : ");
 
         for (int i = 0; i < this.distances.length; i++)
         {
