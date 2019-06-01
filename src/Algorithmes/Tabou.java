@@ -68,8 +68,8 @@ public class Tabou{
                 ArrayList<Voisin> voisins= this.genererVoisinAleatoire(solutionMinimale.clone(),mouvementInterdit);
 
                 //Fitness du voisin generer
-                voisins = this.calculerFitnessVoisins(voisins,fitnessActuelle);
-            System.out.println("FA "+fitnessActuelle);
+                voisins = this.calculerFitnessVoisins(voisins,fitnessMinimale);
+            System.out.println("FA "+fitnessMinimale);
             //System.out.println("FV1 "+voisins.get(0).getFitness());
            // System.out.println("FV2 "+voisins.get(1).getFitness());
 
