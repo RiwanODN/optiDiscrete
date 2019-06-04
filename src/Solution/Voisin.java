@@ -4,7 +4,9 @@ public class Voisin {
     private int[] solution;
     private int fitness;
     private int delta;
-    private int[] mouvementInterdit;
+    //private int[] mouvementInterdit;
+    private Permutation permutation;
+
 
     public Voisin(int[] solution) {
         this.solution = solution;
@@ -34,11 +36,23 @@ public class Voisin {
         this.delta = delta;
     }
 
-    public int[] getMouvementInterdit() {
+   /* public int[] getMouvementInterdit() {
         return mouvementInterdit;
     }
 
     public void setMouvementInterdit(int[] mouvementInterdit) {
         this.mouvementInterdit = mouvementInterdit;
+    }*/
+
+    public Permutation getPermutation() {
+        return permutation;
     }
+
+    public void setPermutation(Permutation permutation) {
+        this.permutation = permutation;
+    }
+
+
+
+
 }

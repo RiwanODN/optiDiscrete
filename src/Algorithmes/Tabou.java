@@ -1,5 +1,6 @@
 package Algorithmes;
 
+import Solution.Permutation;
 import Solution.Voisin;
 import javafx.util.Pair;
 
@@ -39,6 +40,7 @@ public class Tabou{
             }
 
         }
+
         return fitness;
     }
 
@@ -61,14 +63,14 @@ public class Tabou{
         int fitnessTmp;
 
         ArrayList<int[]> mouvementInterdit=new ArrayList<>();
-
-        for(int i = 0 ; i <= nombreIteration ; i++){
+        //nombreIteration
+        for(int i = 0 ; i <=nombreIteration  ; i++){
 
                 //Generation d'un voisin aleatoire
-                ArrayList<Voisin> voisins= this.genererVoisinAleatoire(solutionMinimale.clone(),mouvementInterdit);
+                ArrayList<Voisin> voisins= this.genererVoisinAleatoire(solutionMinimale.clone(),mouvementInterdit,fitnessMinimale);
 
                 //Fitness du voisin generer
-                voisins = this.calculerFitnessVoisins(voisins,fitnessMinimale);
+                //voisins = this.calculerFitnessVoisins(voisins,fitnessMinimale);
             System.out.println("FA "+fitnessMinimale);
             //System.out.println("FV1 "+voisins.get(0).getFitness());
            // System.out.println("FV2 "+voisins.get(1).getFitness());
@@ -108,7 +110,7 @@ public class Tabou{
 
     }
 
-    public ArrayList genererVoisinAleatoire(int[] solutionActuelle, ArrayList<int[]> listMouvementInterdit){
+    public ArrayList genererVoisinAleatoire(int[] solutionActuelle, ArrayList<int[]> listMouvementInterdit, int fitnessActuelle){
         int tmp;
         int mouvementInterdit[];
 
@@ -121,43 +123,51 @@ public class Tabou{
         System.out.println("recherche de voisins");
 
         //index aleatoire entre 0 et nombreElement
-        premierElement = 1+intAleatoire.nextInt(nombreElement-2);
+        for(int i=0; i<=solutionActuelle.length-2;i++){
 
-        //Permuttation de xi et xi-1
-        int deuxiemeElement = premierElement-1;
-        int[] sVoisin= Arrays.copyOf(solutionActuelle,nombreElement);
+            premierElement = i;
 
-        //boolean permettant de savoir si le mouvement est non autorisé
-        boolean b=false;
-        if (listMouvementInterdit.size()!=0){
+            for(int j=i+1;j<=solutionActuelle.length-1;j++) {
+                //Permuttation de xi et xi-1
+               /* int deuxiemeElement = premierElement - 1;*/
+                int deuxiemeElement=j;
 
+                int[] sVoisin = Arrays.copyOf(solutionActuelle, nombreElement);
 
+                //boolean permettant de savoir si le mouvement est non autorisé
+                boolean b = false;
+                if (listMouvementInterdit.size() != 0) {
 
-        for(int i=0;i<=listMouvementInterdit.size()-1;i++) {
-            if (listMouvementInterdit.get(i)[0] == premierElement && listMouvementInterdit.get(i)[1] == deuxiemeElement){
-                b = true;
+                    for (int k = 0; k <= listMouvementInterdit.size() - 1; k++) {
+                        if (listMouvementInterdit.get(k)[0] == premierElement && listMouvementInterdit.get(k)[1] == deuxiemeElement) {
+                            b = true;
+                            System.out.println("MOUVEMENT INTERDIT");
+                        }
+                    }
+                }
+                if (b == false) {
+                    Permutation permutation=new Permutation(premierElement,deuxiemeElement);
+
+                    Voisin voisin = new Voisin(permutation.permuter(solutionActuelle));
+
+                    voisin.setPermutation(permutation);
+
+                    voisin.setFitness(this.calculerFitness(voisin.getSolution()));
+
+                    voisin.setDelta(voisin.getFitness()-fitnessActuelle);
+
+                    voisins.add(voisin);
+                }
 
             }
-        }
-        }
-
-        if (b==false){
-            tmp = sVoisin[premierElement];
 
 
-
-            sVoisin[premierElement] = sVoisin[deuxiemeElement];
-            sVoisin[deuxiemeElement] = tmp;
-
-            voisins.add(new Voisin(sVoisin));
-
-            //ajout du mouvement interdit
-
-            mouvementInterdit=new int[]{deuxiemeElement,premierElement};
-            voisins.get(0).setMouvementInterdit(mouvementInterdit);
         }
 
 
+
+
+/*
         //Permuttation de xi et xi+1
         sVoisin= Arrays.copyOf(solutionActuelle,nombreElement);
         deuxiemeElement = premierElement+1;
@@ -186,7 +196,8 @@ public class Tabou{
             //System.out.println("un deuxieme ajout de mvt");
             mouvementInterdit = new int[]{premierElement, deuxiemeElement};
             voisins.get(1).setMouvementInterdit(mouvementInterdit);
-        }
+        }*/
+
         return voisins;
     }
 
@@ -207,12 +218,16 @@ public class Tabou{
         int fitMin = voisins.get(0).getFitness();
         int iMin=0;
 
+
+
         for (int i =1;i<=voisins.size()-1;i++){
 
             if (fitMin>voisins.get(i).getFitness()){
                 fitMin=voisins.get(i).getFitness();
                 iMin=i;
+
             }
+
         }
 
        // HashMap<int[], Pair> meilleurVoisin= new HashMap<>();
@@ -224,7 +239,7 @@ public class Tabou{
     public ArrayList<int[]> majMouvementInterdit(ArrayList<int[]> mouvementInterdit, Voisin meilleurVoisin){
 
 
-        mouvementInterdit.add(0,meilleurVoisin.getMouvementInterdit());
+        mouvementInterdit.add(0,meilleurVoisin.getPermutation().permutMoins1());
 
         if (mouvementInterdit.size()>10){
             mouvementInterdit.remove(mouvementInterdit.size()-1);
