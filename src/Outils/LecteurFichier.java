@@ -6,6 +6,9 @@ import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
 
+/*
+    Permet la lecture des fichiers Taillards, ainsi que la création des matrices de distances et de poids
+ */
 public class LecteurFichier {
 
     private String nomFichier;
@@ -101,7 +104,7 @@ public class LecteurFichier {
     }
 
     public void afficherPoids(){
-        System.out.println("Matrice des distance : ");
+        System.out.println("Matrice des poids : ");
 
         for (int i = 0; i < this.poids.length; i++)
         {
@@ -115,7 +118,7 @@ public class LecteurFichier {
     }
 
     public void afficherDistances(){
-        System.out.println("Matrice des poids : ");
+        System.out.println("Matrice des distances : ");
 
         for (int i = 0; i < this.distances.length; i++)
         {
