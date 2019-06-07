@@ -61,6 +61,13 @@ public class Permutation {
 
     }
 
+    public int[] getPermut() {
+        int[] permut=new int[2];
+        permut[0]=this.getFirstIndice();
+        permut[1]=this.getSecondIndice();
+        return permut;
+    }
+
     public int getFirstIndice() {
         return firstIndice;
     }

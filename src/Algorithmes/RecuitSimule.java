@@ -1,4 +1,4 @@
-package Algorithmes;
+package src.Algorithmes;
 
 
 import javafx.util.Pair;

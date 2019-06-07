@@ -1,8 +1,9 @@
-package Algorithmes;
+package src.Algorithmes;
 
 import Solution.Permutation;
-import Solution.Voisin;
+
 import javafx.util.Pair;
+import src.Solution.Voisin;
 
 import java.sql.SQLOutput;
 import java.util.*;
@@ -59,39 +60,35 @@ public class Tabou{
 
         int delta;
 
-        int[] solutionTmp;
-        int fitnessTmp;
+        int[] solutionExplo=solutionInitiale;
+        int fitnessExplo=fitnessMinimale;
 
         ArrayList<int[]> mouvementInterdit=new ArrayList<>();
         //nombreIteration
+
+        int nbChangement=0;
+
         for(int i = 0 ; i <=nombreIteration  ; i++){
+            System.out.println("Fitness Minimale "+fitnessMinimale);
+            System.out.println("Fitness Explo "+fitnessExplo);
 
-                //Generation d'un voisin aleatoire
-                ArrayList<Voisin> voisins= this.genererVoisinAleatoire(solutionMinimale.clone(),mouvementInterdit,fitnessMinimale);
+                //Generation de voisins et récupération du meilleur
+            Voisin meilleurVoisin= this.genererVoisinAleatoire(solutionExplo.clone(),mouvementInterdit,fitnessExplo);
 
-                //Fitness du voisin generer
-                //voisins = this.calculerFitnessVoisins(voisins,fitnessMinimale);
-            System.out.println("FA "+fitnessMinimale);
-            //System.out.println("FV1 "+voisins.get(0).getFitness());
-           // System.out.println("FV2 "+voisins.get(1).getFitness());
-
-                //selection fitness la plus faible
-                Voisin meilleurVoisin=this.chercherFitnessMin(voisins);
-            System.out.println("F M "+meilleurVoisin.getFitness());
-            System.out.println("D M" + meilleurVoisin.getDelta());
-
-
-                // System.out.println("Fmin : "+fitnessMinimale+" Fi : "+fitnessActuelle+ " delta : "+delta);
                 if(meilleurVoisin.getDelta() <= 0){
                     //System.out.println("delta <= 0");
-
+                    nbChangement++;
                     solutionMinimale = meilleurVoisin.getSolution() ;
                     fitnessMinimale = meilleurVoisin.getFitness();
+                    solutionExplo = meilleurVoisin.getSolution() ;
+                    fitnessExplo = meilleurVoisin.getFitness();
+
+                    System.out.println("\n CHANGEMENT "+nbChangement);
 
                 } else {
 
-                    /*solutionMinimale = meilleurVoisin.getSolution() ;
-                    fitnessMinimale = meilleurVoisin.getFitness();*/
+                    solutionExplo = meilleurVoisin.getSolution() ;
+                    fitnessExplo = meilleurVoisin.getFitness();
                     mouvementInterdit=this.majMouvementInterdit(mouvementInterdit,meilleurVoisin);
 
 
@@ -110,7 +107,7 @@ public class Tabou{
 
     }
 
-    public ArrayList genererVoisinAleatoire(int[] solutionActuelle, ArrayList<int[]> listMouvementInterdit, int fitnessActuelle){
+    public Voisin genererVoisinAleatoire(int[] solutionActuelle, ArrayList<int[]> listMouvementInterdit, int fitnessActuelle){
         int tmp;
         int mouvementInterdit[];
 
@@ -120,9 +117,13 @@ public class Tabou{
         int nombreElement = solutionActuelle.length;
         int premierElement = 0;
 
-        System.out.println("recherche de voisins");
+
+        System.out.println("recherche du meilleur voisin");
 
         //index aleatoire entre 0 et nombreElement
+        int compteur=0;
+        int iBestFit=0;
+        int BestFit=fitnessActuelle*100;
         for(int i=0; i<=solutionActuelle.length-2;i++){
 
             premierElement = i;
@@ -141,11 +142,12 @@ public class Tabou{
                     for (int k = 0; k <= listMouvementInterdit.size() - 1; k++) {
                         if (listMouvementInterdit.get(k)[0] == premierElement && listMouvementInterdit.get(k)[1] == deuxiemeElement) {
                             b = true;
-                            System.out.println("MOUVEMENT INTERDIT");
+                            System.out.println("\n MOUVEMENT INTERDIT------------------------------------------");
                         }
                     }
                 }
                 if (b == false) {
+
                     Permutation permutation=new Permutation(premierElement,deuxiemeElement);
 
                     Voisin voisin = new Voisin(permutation.permuter(solutionActuelle));
@@ -157,9 +159,15 @@ public class Tabou{
                     voisin.setDelta(voisin.getFitness()-fitnessActuelle);
 
                     voisins.add(voisin);
+                    if (voisin.getFitness()<BestFit){
+                        iBestFit=compteur;
+                        BestFit=voisin.getFitness();
+                    }
+                    compteur++;
                 }
 
             }
+
 
 
         }
@@ -197,8 +205,9 @@ public class Tabou{
             mouvementInterdit = new int[]{premierElement, deuxiemeElement};
             voisins.get(1).setMouvementInterdit(mouvementInterdit);
         }*/
-
-        return voisins;
+        System.out.println("le meilleur voisin:"+voisins.get(iBestFit).getFitness());
+        System.out.println("Permutation "+voisins.get(iBestFit).getPermutation().getFirstIndice()+":"+voisins.get(iBestFit).getPermutation().getSecondIndice());
+        return voisins.get(iBestFit);
     }
 
 
@@ -225,10 +234,10 @@ public class Tabou{
             if (fitMin>voisins.get(i).getFitness()){
                 fitMin=voisins.get(i).getFitness();
                 iMin=i;
-
             }
 
         }
+        System.out.println("Je confirme: "+voisins.get(iMin).getFitness());
 
        // HashMap<int[], Pair> meilleurVoisin= new HashMap<>();
         //meilleurVoisin.put(voisins.get(iMin),map.get(voisins.get(iMin)));
@@ -239,7 +248,8 @@ public class Tabou{
     public ArrayList<int[]> majMouvementInterdit(ArrayList<int[]> mouvementInterdit, Voisin meilleurVoisin){
 
 
-        mouvementInterdit.add(0,meilleurVoisin.getPermutation().permutMoins1());
+        //mouvementInterdit.add(0,meilleurVoisin.getPermutation().permutMoins1());
+        mouvementInterdit.add(0,meilleurVoisin.getPermutation().getPermut());
 
         if (mouvementInterdit.size()>10){
             mouvementInterdit.remove(mouvementInterdit.size()-1);

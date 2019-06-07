@@ -1,4 +1,4 @@
-package Outils;
+package src.Outils;
 
 import java.io.FileWriter;
 import java.io.IOException;
@@ -24,7 +24,7 @@ public class ecritureCSV {
         FileWriter csvWriter = new FileWriter(this.nomfichier + ".csv");
 
         for (int rowData : this.donnees) {
-            csvWriter.append(rowData + ";");
+            csvWriter.append(rowData + " ");
             csvWriter.append("\n");
         }
 

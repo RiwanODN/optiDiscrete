@@ -1,4 +1,6 @@
-package Solution;
+package src.Solution;
+
+import Solution.Permutation;
 
 public class Voisin {
     private int[] solution;
