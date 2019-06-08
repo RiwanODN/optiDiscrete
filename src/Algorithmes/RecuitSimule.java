@@ -78,8 +78,10 @@ public class RecuitSimule {
                 hm = this.genererVoisinAleatoireOptimisee(solutionMinimale.clone(), fitnessMinimale);
                 entry = hm.entrySet().iterator().next();
                 solutionActuelle = entry.getKey();
+                //solutionActuelle = this.genererVoisinAleatoire(solutionMinimale.clone());
                 //Fitness du voisin generer
                 fitnessActuelle = hm.entrySet().iterator().next().getValue();
+                //fitnessActuelle = this.calculerFitness(solutionActuelle);
 
                 //Difference de la fitness du voisin et la fitness minimale
                 delta = fitnessActuelle - fitnessMinimale;
@@ -112,6 +114,29 @@ public class RecuitSimule {
 
         return solutionMinimale;
 
+    }
+
+    //Génère un voisin par permutation aléatoire
+    public int[] genererVoisinAleatoire(int[] solutionActuelle){
+        Random intAleatoire = new Random();
+
+        int nombreElement = solutionActuelle.length;
+        int premierElement = 0;
+        int deuxiemeElement = 0;
+
+        //index aleatoire entre 0 et nombreElement
+        premierElement = intAleatoire.nextInt(nombreElement);
+
+        while(deuxiemeElement == premierElement){
+            deuxiemeElement = intAleatoire.nextInt(nombreElement);
+        }
+
+        //Permuttation des valeurs
+        int tmp = solutionActuelle[premierElement];
+        solutionActuelle[premierElement] = solutionActuelle[deuxiemeElement];
+        solutionActuelle[deuxiemeElement] = tmp;
+
+        return solutionActuelle;
     }
 
     //Genere un voisin aleatoire, renvoi le voisin et la nouvelle fitness, recalculee partiellement
@@ -229,14 +254,18 @@ public class RecuitSimule {
     }
 
     //Creer un ensemble de solution et genere une temperature ainsi qu'un nombre d'iteration
-    public Pair<Double, Double> genererTemperature(int nombreIteration, double refroidissement){
+    public Pair<Double, Double> genererTemperature(int nombreIteration, int taille){
 
 
-        Integer[] solutionEssai = new Integer[]{1,2,3,4,5,6,7,8,9,10,11,12};
+        Integer[] solutionEssai = new Integer[taille];
+
+        Arrays.setAll(solutionEssai, i -> i + 1);
 
         List<Integer> solutionAleatoireList = Arrays.asList(solutionEssai);
 
-        Integer[] voisinEssai = new Integer[]{1,2,3,4,5,6,7,8,9,10,11,12};
+        Integer[] voisinEssai = new Integer[taille];
+
+        Arrays.setAll(voisinEssai, i -> i + 1);
 
         List<Integer> voisinAleatoireList = Arrays.asList(voisinEssai);
 

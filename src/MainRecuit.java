@@ -18,20 +18,24 @@ public class MainRecuit {
         System.out.println("QAP");
         System.out.println("http://anjos.mgi.polymtl.ca/qaplib/inst.html#Ta");
 
-        //Declare une solution initiale
-        Integer[] solutionEssai = new Integer[]{1,2,3,4,5,6,7,8,9,10,11,12};
 
-        //Cree une solution de part aleatoire
-        List<Integer> solutionAleatoireList = Arrays.asList(solutionEssai);
-        Collections.shuffle(solutionAleatoireList);
 
         //Affichage des matrices
-        LecteurFichier lecteur = new LecteurFichier("tai12a.txt");//Smin = {8,1,6,2,11,10,3,5,9,7,12,4} Fmin = 224416
+        LecteurFichier lecteur = new LecteurFichier("tai100a.txt");//Smin = {8,1,6,2,11,10,3,5,9,7,12,4} Fmin = 224416
 
         lecteur.lireFichier();
 
         lecteur.afficherPoids();
         lecteur.afficherDistances();
+
+        //Declare une solution initiale
+        Integer[] solutionEssai = new Integer[lecteur.getDistances().length];
+
+        Arrays.setAll(solutionEssai, i -> i + 1);
+        //Cree une solution de depart aleatoire
+        List<Integer> solutionAleatoireList = Arrays.asList(solutionEssai);
+        Collections.shuffle(solutionAleatoireList);
+
 
         //Liste qui contiendra les différentes fitness calculées lors des tests, afin de créer un CSV, pour des études statistiques
         ArrayList<Integer> donnees = new ArrayList<>();
@@ -44,7 +48,7 @@ public class MainRecuit {
         double tauxRefroiddisement = 0.99;
 
         //Genere le nombre de pas N1 ainsi que la temperature sur un grand ensemble de données
-        Pair valeursGenerees = (recuitSimule.genererTemperature(1000, tauxRefroiddisement));
+        Pair valeursGenerees = (recuitSimule.genererTemperature(1000, solutionEssai.length));
 
         double temperatureGeneree = ((double) (valeursGenerees.getKey()));
         int nombreDePasGenere = ((Double) valeursGenerees.getValue()).intValue();
@@ -53,7 +57,11 @@ public class MainRecuit {
 
         int fitnessInitiale;
         int fitnessRecuit;
-        for(int i = 0 ; i<= 2 ; i++){
+
+        //Mesure du temps
+
+        long debutCode = System.nanoTime();
+        //for(int i = 0 ; i<= 1 ; i++){
             //Mélange la solution pour avoir une initialisation aléatoire
             Collections.shuffle(solutionAleatoireList);
             //Affichage solution initiale
@@ -75,8 +83,11 @@ public class MainRecuit {
             System.out.println("fitness du recuit simule : " + fitnessRecuit );
 
             donnees.add(fitnessRecuit);
-        }
+        //}
 
+        long finCode = System.nanoTime();
+        long tempsExecution = finCode - debutCode;
+        System.out.println("Execution en " + tempsExecution / 1000000 + "ms");
 
         //Creation CSV a partir de la liste "donnees"
         //premier parametre modifiable afin d'indiquer le nom du CSV
