@@ -4,8 +4,6 @@ import Solution.Permutation;
 
 import javafx.util.Pair;
 import src.Solution.Voisin;
-
-import java.sql.SQLOutput;
 import java.util.*;
 
 public class Tabou{
@@ -45,6 +43,35 @@ public class Tabou{
         return fitness;
     }
 
+    public int fitnessOpti(int[] sol,int[] newSol, Permutation p, int fitness ) {
+
+        int newFitness = fitness;
+        int produit1=0;
+        int produit2=0;
+        int produit3 = 0;
+        int produit4=0;
+
+        for(int i=0; i<= sol.length-1 ; i++ ) {
+            if( i!= p.getFirstIndice() ||  i!=p.getSecondIndice() ) {
+
+                produit1 = this.poids[sol[i]-1][sol[p.getFirstIndice()]-1]* this.distance[i][p.getFirstIndice()];
+
+                produit2 = this.poids[sol[i]-1][sol[p.getSecondIndice()]-1]* this.distance[i][p.getSecondIndice()];
+
+                produit3 = this.poids[newSol[i]-1][newSol[p.getFirstIndice()]-1]* this.distance[i][p.getFirstIndice()];
+
+                produit4 = this.poids[newSol[i]-1][newSol[p.getSecondIndice()]-1]* this.distance[i][p.getSecondIndice()];
+
+                newFitness = newFitness  - produit1 - produit2 + produit3 + produit4 ;
+            }
+        }
+
+
+
+        return newFitness ;
+
+    }
+
 
     public int[] effectuerTabou(int[] solutionInitiale, int nombreIteration){
 
@@ -57,8 +84,6 @@ public class Tabou{
 
        /* int[] solutionActuelle=solutionInitiale;
         int fitnessActuelle=this.calculerFitness(solutionActuelle);*/
-
-        int delta;
 
         int[] solutionExplo=solutionInitiale;
         int fitnessExplo=fitnessMinimale;
@@ -75,30 +100,22 @@ public class Tabou{
                 //Generation de voisins et récupération du meilleur
             Voisin meilleurVoisin= this.genererVoisinAleatoire(solutionExplo.clone(),mouvementInterdit,fitnessExplo);
 
-                if(meilleurVoisin.getDelta() <= 0){
-                    //System.out.println("delta <= 0");
+                if(meilleurVoisin.getDelta() >= 0){
+                    mouvementInterdit=this.majMouvementInterdit(mouvementInterdit,meilleurVoisin);
+
+                }
+                if (meilleurVoisin.getFitness()<fitnessMinimale){
                     nbChangement++;
                     solutionMinimale = meilleurVoisin.getSolution() ;
                     fitnessMinimale = meilleurVoisin.getFitness();
-                    solutionExplo = meilleurVoisin.getSolution() ;
-                    fitnessExplo = meilleurVoisin.getFitness();
-
-                    System.out.println("\n CHANGEMENT "+nbChangement);
-
-                } else {
-
-                    solutionExplo = meilleurVoisin.getSolution() ;
-                    fitnessExplo = meilleurVoisin.getFitness();
-                    mouvementInterdit=this.majMouvementInterdit(mouvementInterdit,meilleurVoisin);
-
-
-
                     /*if(Math.exp(( (delta * -1) / temperatureActuelle)) > probabiliteAcceptation){
                        // System.out.println("Formule");
                         solutionMinimale = solutionActuelle;
                         fitnessMinimale = fitnessActuelle;
                     }*/
                 }
+            solutionExplo = meilleurVoisin.getSolution() ;
+            fitnessExplo = meilleurVoisin.getFitness();
 
         }
 
@@ -118,12 +135,12 @@ public class Tabou{
         int premierElement = 0;
 
 
-        System.out.println("recherche du meilleur voisin");
+       // System.out.println("recherche du meilleur voisin");
 
         //index aleatoire entre 0 et nombreElement
         int compteur=0;
         int iBestFit=0;
-        int BestFit=fitnessActuelle*100;
+        int BestFit=Integer.MAX_VALUE;
         for(int i=0; i<=solutionActuelle.length-2;i++){
 
             premierElement = i;
@@ -142,7 +159,7 @@ public class Tabou{
                     for (int k = 0; k <= listMouvementInterdit.size() - 1; k++) {
                         if (listMouvementInterdit.get(k)[0] == premierElement && listMouvementInterdit.get(k)[1] == deuxiemeElement) {
                             b = true;
-                            System.out.println("\n MOUVEMENT INTERDIT------------------------------------------");
+                            //System.out.println("\n MOUVEMENT INTERDIT------------------------------------------");
                         }
                     }
                 }
@@ -153,6 +170,9 @@ public class Tabou{
                     Voisin voisin = new Voisin(permutation.permuter(solutionActuelle));
 
                     voisin.setPermutation(permutation);
+
+                   // System.out.println("Calcul fitness + "+ this.calculerFitness(voisin.getSolution()));
+                    //System.out.println("calcul fitness opti + "+this.fitnessOpti(solutionActuelle,voisin.getSolution(),permutation,fitnessActuelle));
 
                     voisin.setFitness(this.calculerFitness(voisin.getSolution()));
 
@@ -167,8 +187,6 @@ public class Tabou{
                 }
 
             }
-
-
 
         }
 
@@ -205,8 +223,8 @@ public class Tabou{
             mouvementInterdit = new int[]{premierElement, deuxiemeElement};
             voisins.get(1).setMouvementInterdit(mouvementInterdit);
         }*/
-        System.out.println("le meilleur voisin:"+voisins.get(iBestFit).getFitness());
-        System.out.println("Permutation "+voisins.get(iBestFit).getPermutation().getFirstIndice()+":"+voisins.get(iBestFit).getPermutation().getSecondIndice());
+        //System.out.println("le meilleur voisin:"+voisins.get(iBestFit).getFitness());
+        //System.out.println("Permutation "+voisins.get(iBestFit).getPermutation().getFirstIndice()+":"+voisins.get(iBestFit).getPermutation().getSecondIndice());
         return voisins.get(iBestFit);
     }
 
@@ -251,13 +269,14 @@ public class Tabou{
         //mouvementInterdit.add(0,meilleurVoisin.getPermutation().permutMoins1());
         mouvementInterdit.add(0,meilleurVoisin.getPermutation().getPermut());
 
-        if (mouvementInterdit.size()>10){
+        if (mouvementInterdit.size()>14){
             mouvementInterdit.remove(mouvementInterdit.size()-1);
         }
 
 
         return mouvementInterdit;
     }
+    
 }
 
 
