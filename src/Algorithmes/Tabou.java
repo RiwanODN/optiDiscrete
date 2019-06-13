@@ -153,8 +153,15 @@ public class Tabou{
                     Voisin voisin = new Voisin(permutation.permuter(solutionActuelle));
 
                     voisin.setPermutation(permutation);
+                    int fitnessOptimisee = 0;
+                    if(voisins.size() != 0) {
+                        fitnessOptimisee = this.calculerFitnessPartielle(voisins.get(iBestFit).getSolution(), voisin.getSolution(), BestFit, permutation);
 
-                    voisin.setFitness(this.calculerFitness(voisin.getSolution()));
+                    } else {
+                        fitnessOptimisee = this.calculerFitnessPartielle(solutionActuelle, voisin.getSolution(), fitnessActuelle, permutation);
+
+                    }
+                    voisin.setFitness(fitnessOptimisee);
 
                     voisin.setDelta(voisin.getFitness()-fitnessActuelle);
 
@@ -208,6 +215,101 @@ public class Tabou{
         System.out.println("le meilleur voisin:"+voisins.get(iBestFit).getFitness());
         System.out.println("Permutation "+voisins.get(iBestFit).getPermutation().getFirstIndice()+":"+voisins.get(iBestFit).getPermutation().getSecondIndice());
         return voisins.get(iBestFit);
+    }
+
+    //Genere un voisin aleatoire, renvoi le voisin et la nouvelle fitness, recalculee partiellement
+    public int calculerFitnessPartielle(int[] solutionActuelle,int[] voisin, int fitnessInitiale, Permutation permutation){
+
+        int nombreElement = solutionActuelle.length;
+        int premierElement = permutation.getFirstIndice();
+        int deuxiemeElement = permutation.getSecondIndice();
+
+        //fitness des elements a swaper
+        int fitnessAvantSwap = this.calculerFitnessMachine(solutionActuelle, premierElement) + this.calculerFitnessMachine(solutionActuelle, deuxiemeElement);
+
+        //fitness des autres elements aux index premierElement et deuxiemeElement
+        int numeroMachineA = 0;
+        int numeroMachineB = 0;
+        int distance = 0;
+        int poids = 0;
+        //Pour chaque element, on calcul la fitness des index qui ont etes swapes
+        for(int i=0;i< solutionActuelle.length;i++){
+            //Index premierElement
+            numeroMachineA = solutionActuelle[i];
+
+            numeroMachineB = solutionActuelle[premierElement];
+
+            distance = this.distance[i][premierElement];
+            poids = this.poids[numeroMachineA-1][numeroMachineB-1];
+
+            fitnessAvantSwap = fitnessAvantSwap + (distance * poids);
+
+            //Index deuxiemeElement
+            numeroMachineB = solutionActuelle[deuxiemeElement];
+
+            distance = this.distance[i][deuxiemeElement];
+            poids = this.poids[numeroMachineA-1][numeroMachineB-1];
+
+            fitnessAvantSwap = fitnessAvantSwap + (distance * poids);
+
+
+
+        }
+
+
+        //fitness des elements swapés
+        int fitnessApresSwap = this.calculerFitnessMachine(voisin, premierElement) + this.calculerFitnessMachine(voisin, deuxiemeElement);
+
+        //fitness des autres elements aux index premierElement et deuxiemeElement
+        for(int i=0;i< solutionActuelle.length;i++){
+            numeroMachineA = voisin[i];
+
+
+            numeroMachineB = voisin[premierElement];
+
+            distance = this.distance[i][premierElement];
+            poids = this.poids[numeroMachineA-1][numeroMachineB-1];
+
+            fitnessApresSwap = fitnessApresSwap + (distance * poids);
+
+            numeroMachineB = voisin[deuxiemeElement];
+
+            distance = this.distance[i][deuxiemeElement];
+            poids = this.poids[numeroMachineA-1][numeroMachineB-1];
+
+            fitnessApresSwap = fitnessApresSwap + (distance * poids);
+        }
+
+
+        //Pour la fitness finale, on addition a la fitness initiale, la difference des fitness qui ont changees
+        int fitnessFinale = fitnessApresSwap-fitnessAvantSwap+fitnessInitiale;
+
+
+        //retourne fitness voisin
+        return fitnessFinale;
+    }
+
+    //Calcul la fitness pour une machine
+    public int calculerFitnessMachine(int[] solution, int indexMachine){
+        int numeroMachineA;
+        numeroMachineA = solution[indexMachine];
+        int numeroMachineB = 0;
+        int distance = 0;
+        int poids = 0;
+        int fitness = 0;
+
+        for(int j=0;j< solution.length;j++){
+            numeroMachineB = solution[j];
+
+            distance = this.distance[indexMachine][j];
+            poids = this.poids[numeroMachineA-1][numeroMachineB-1];
+
+            fitness = fitness + (distance * poids);
+
+        }
+
+
+        return fitness;
     }
 
 

@@ -4,10 +4,7 @@ import src.Algorithmes.RecuitSimule;
 import src.Outils.LecteurFichier;
 import src.Outils.ecritureCSV;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
+import java.util.*;
 
 
 public class MainRecuit {
@@ -21,7 +18,7 @@ public class MainRecuit {
 
 
         //Affichage des matrices
-        LecteurFichier lecteur = new LecteurFichier("tai100a.txt");//Smin = {8,1,6,2,11,10,3,5,9,7,12,4} Fmin = 224416
+        LecteurFichier lecteur = new LecteurFichier("tai60a.txt");//Smin = {8,1,6,2,11,10,3,5,9,7,12,4} Fmin = 224416
 
         lecteur.lireFichier();
 
@@ -39,6 +36,7 @@ public class MainRecuit {
 
         //Liste qui contiendra les différentes fitness calculées lors des tests, afin de créer un CSV, pour des études statistiques
         ArrayList<Integer> donnees = new ArrayList<>();
+        ArrayList<Double> ameliorations = new ArrayList<>();
 
         //Instanciation du recuit simule avec les matrices
         RecuitSimule recuitSimule = new RecuitSimule(lecteur.getDistances(), lecteur.getPoids());
@@ -57,16 +55,14 @@ public class MainRecuit {
 
         int fitnessInitiale;
         int fitnessRecuit;
-
+        System.out.println("Solution initiale : ");
+        Collections.shuffle(solutionAleatoireList);
+        MainRecuit.afficherSolution(solutionAleatoireList.stream().mapToInt(Integer::intValue).toArray());
         //Mesure du temps
-
+double amelioration = 0;
         long debutCode = System.nanoTime();
-        //for(int i = 0 ; i<= 1 ; i++){
-            //Mélange la solution pour avoir une initialisation aléatoire
-            Collections.shuffle(solutionAleatoireList);
-            //Affichage solution initiale
-            System.out.println("Solution initiale : ");
-            MainRecuit.afficherSolution(solutionAleatoireList.stream().mapToInt(Integer::intValue).toArray());
+        //for(int i = 0 ; i<= 1000 ; i++){
+
             fitnessInitiale = recuitSimule.calculerFitness(solutionAleatoireList.stream().mapToInt(Integer::intValue).toArray());
             System.out.println("Fitness : " + fitnessInitiale);
 
@@ -76,19 +72,32 @@ public class MainRecuit {
                     , temperatureGeneree,
                     nombreDePasGenere,500, tauxRefroiddisement, fitnessInitiale);
 
-            //Afficher solution du recuit simule
-            System.out.println("Solution du recuit simule : ");
-            MainRecuit.afficherSolution(solutionRecuitSimule);
+
             fitnessRecuit = recuitSimule.calculerFitness(solutionRecuitSimule);
             System.out.println("fitness du recuit simule : " + fitnessRecuit );
 
+            amelioration = -(((fitnessRecuit-fitnessInitiale)*100)/fitnessInitiale);
+            ameliorations.add(amelioration);
             donnees.add(fitnessRecuit);
         //}
+
+        IntSummaryStatistics stats = donnees
+                .stream()
+                .mapToInt(Integer::intValue)
+                .summaryStatistics();
+        DoubleSummaryStatistics statsAmelioration = ameliorations
+                .stream()
+                .mapToDouble(Double::doubleValue)
+                .summaryStatistics();
+        System.out.println("Fitness moyenne : " + stats.getAverage());
+        System.out.println("Amelioration moyenne :" + statsAmelioration.getAverage());
 
         long finCode = System.nanoTime();
         long tempsExecution = finCode - debutCode;
         System.out.println("Execution en " + tempsExecution / 1000000 + "ms");
-
+        //Afficher solution du recuit simule
+        //System.out.println("Solution du recuit simule : ");
+        //MainRecuit.afficherSolution(solutionRecuitSimule);
         //Creation CSV a partir de la liste "donnees"
         //premier parametre modifiable afin d'indiquer le nom du CSV
         ecritureCSV csv = new ecritureCSV("test", donnees);

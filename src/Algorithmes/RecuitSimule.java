@@ -49,6 +49,7 @@ public class RecuitSimule {
     public int[] effectuerRecuitSimule(int[] solutionInitiale, double temperatureInitiale,
                                        int nombreIteration, int nombreIterationTemperature, double tauxRefroidissement, int fitnessinitiale){
 
+        System.out.println( nombreIteration + " " + temperatureInitiale);
         System.out.println("------ RECUIT SIMULE ------");
         //Initialisation
         int[] solutionMinimale = solutionInitiale;
@@ -96,8 +97,7 @@ public class RecuitSimule {
 
                     //Genere une probabilite d'acceptation
                     probabiliteAcceptation = Math.random();
-
-                    if(Math.exp(( (delta * -1) / temperatureActuelle)) > probabiliteAcceptation){
+                    if(Math.exp(( (Math.abs(delta) * -1) / temperatureActuelle)) > probabiliteAcceptation){
                         solutionMinimale = solutionActuelle;
                         fitnessMinimale = fitnessActuelle;
                     }
@@ -291,7 +291,6 @@ public class RecuitSimule {
         double temperatureGeneree = ((-deltaMax)/Math.log(0.8));
         System.out.println(temperatureGeneree);
         double nombrePasGenere = Math.log( -deltaMax / (temperatureGeneree * Math.log(0.01))) / Math.log(0.9993);
-
 
         return new Pair(temperatureGeneree, nombrePasGenere);
     }

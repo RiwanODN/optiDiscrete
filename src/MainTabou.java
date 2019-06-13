@@ -20,7 +20,7 @@ public class MainTabou {
 
 
         //Affichage des matrices
-        LecteurFichier lecteur = new LecteurFichier("tai100a.txt");//Smin = {8,1,6,2,11,10,3,5,9,7,12,4} Fmin = 224416
+        LecteurFichier lecteur = new LecteurFichier("tai12a.txt");//Smin = {8,1,6,2,11,10,3,5,9,7,12,4} Fmin = 224416
 
 
 
