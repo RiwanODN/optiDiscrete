@@ -1,6 +1,6 @@
 package src;
 
-import src.Algorithmes.Tabou;
+import src.Algorithmes.Descente;
 import src.Outils.LecteurFichier;
 import src.Outils.ecritureCSV;
 
@@ -9,15 +9,12 @@ import java.time.Instant;
 import java.util.*;
 
 
-public class MainTabou {
+public class MainDescente {
 
 
     public static void main(String[] args) {
-
         //lancement d'un chrono
         Instant start=Instant.now();
-
-
 
         System.out.println("QAP");
         System.out.println("http://anjos.mgi.polymtl.ca/qaplib/inst.html#Ta");
@@ -47,43 +44,43 @@ public class MainTabou {
         //Liste qui contiendra les différentes fitness calculées lors des tests, afin de créer un CSV, pour des études statistiques
         ArrayList<Integer> donnees = new ArrayList<>();
 
-        //Instanciation du recuit simule avec les matrices
-        Tabou Tabou = new Tabou(lecteur.getDistances(), lecteur.getPoids());
+        //Instanciation du Descente avec les matrices
+        Descente Descente = new Descente(lecteur.getDistances(), lecteur.getPoids());
 
         int[] solutionRecuitSimule;
 
         int fitnessInitiale;
         int fitnessRecuit;
+
         int nbTest=1000;
-        //nbIteration dans l'algo
-        int nbIter=1000;
         for(int i = 0 ; i<= nbTest ; i++){
             //Mélange la solution pour avoir une initialisation aléatoire
             Collections.shuffle(solutionAleatoireList);
             //Affichage solution initiale
             //Affichage solution initiale
             System.out.println("Solution initiale : ");
-            MainTabou.afficherSolution(solutionAleatoireList.stream().mapToInt(Integer::intValue).toArray());
-            System.out.println("Fitness : " + Tabou.calculerFitness(solutionAleatoireList.stream().mapToInt(Integer::intValue).toArray()));
+            MainDescente.afficherSolution(solutionAleatoireList.stream().mapToInt(Integer::intValue).toArray());
+            System.out.println("Fitness : " + Descente.calculerFitness(solutionAleatoireList.stream().mapToInt(Integer::intValue).toArray()));
 
-            //Solution du recuit Simule
-
-            solutionRecuitSimule = Tabou.effectuerTabou(
+            //Solution du Descente
+            solutionRecuitSimule = Descente.effectuerDescente(
                     solutionAleatoireList.stream().mapToInt(Integer::intValue).toArray()
-                    , nbIter);
+                    , 0);
 
-            //Afficher solution du recuit simule
-            System.out.println("Solution du Tabou : ");
-            MainTabou.afficherSolution(solutionRecuitSimule);
-            System.out.println("fitness du Tabou : " +  Tabou.calculerFitness(solutionRecuitSimule));
+            //Afficher solution du Descente
+            System.out.println("Solution du Descente : ");
+            MainDescente.afficherSolution(solutionRecuitSimule);
+            System.out.println("fitness du Descente : " +  Descente.calculerFitness(solutionRecuitSimule));
 
-            donnees.add(Tabou.calculerFitness(solutionRecuitSimule));
+            donnees.add(Descente.calculerFitness(solutionRecuitSimule));
         }
 
 
         //Creation CSV a partir de la liste "donnees"
         //premier parametre modifiable afin d'indiquer le nom du CSV
         ecritureCSV csv = new ecritureCSV("test", donnees);
+        System.out.println(new Date());
+
         Instant end=Instant.now();
         double time= (Duration.between(start,end).toMillis())/nbTest;
         System.out.println(new Date());
