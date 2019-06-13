@@ -25,7 +25,7 @@ public class MainTabou {
 
 
         //Affichage des matrices
-        LecteurFichier lecteur = new LecteurFichier("tai12a.txt");//Smin = {8,1,6,2,11,10,3,5,9,7,12,4} Fmin = 224416
+        LecteurFichier lecteur = new LecteurFichier("tai60a.txt");//Smin = {8,1,6,2,11,10,3,5,9,7,12,4} Fmin = 224416
 
 
 
@@ -45,16 +45,17 @@ public class MainTabou {
         Collections.shuffle(solutionAleatoireList);
 
         //Liste qui contiendra les différentes fitness calculées lors des tests, afin de créer un CSV, pour des études statistiques
-        ArrayList<Integer> donnees = new ArrayList<>();
+        ArrayList<String> donnees = new ArrayList<>();
+        donnees.add("Fitness Initiale;Fitness Finale;Delta");
 
-        //Instanciation du recuit simule avec les matrices
+        //Instanciation du Tabou avec les matrices
         Tabou Tabou = new Tabou(lecteur.getDistances(), lecteur.getPoids());
 
-        int[] solutionRecuitSimule;
+        int[] solutionTabou;
 
         int fitnessInitiale;
         int fitnessRecuit;
-        int nbTest=1000;
+        int nbTest=100;
         //nbIteration dans l'algo
         int nbIter=1000;
         for(int i = 0 ; i<= nbTest ; i++){
@@ -63,31 +64,34 @@ public class MainTabou {
             //Affichage solution initiale
             //Affichage solution initiale
             System.out.println("Solution initiale : ");
+            fitnessInitiale=Tabou.calculerFitness(solutionAleatoireList.stream().mapToInt(Integer::intValue).toArray());
             MainTabou.afficherSolution(solutionAleatoireList.stream().mapToInt(Integer::intValue).toArray());
             System.out.println("Fitness : " + Tabou.calculerFitness(solutionAleatoireList.stream().mapToInt(Integer::intValue).toArray()));
 
-            //Solution du recuit Simule
+            //Solution du Tabou
 
-            solutionRecuitSimule = Tabou.effectuerTabou(
+            solutionTabou = Tabou.effectuerTabou(
                     solutionAleatoireList.stream().mapToInt(Integer::intValue).toArray()
                     , nbIter);
 
-            //Afficher solution du recuit simule
+            //Afficher solution du Tabou
             System.out.println("Solution du Tabou : ");
-            MainTabou.afficherSolution(solutionRecuitSimule);
-            System.out.println("fitness du Tabou : " +  Tabou.calculerFitness(solutionRecuitSimule));
+            MainTabou.afficherSolution(solutionTabou);
+            System.out.println("fitness du Tabou : " +  Tabou.calculerFitness(solutionTabou));
 
-            donnees.add(Tabou.calculerFitness(solutionRecuitSimule));
+            donnees.add(fitnessInitiale+";"+Tabou.calculerFitness(solutionTabou)+";"+(fitnessInitiale-Tabou.calculerFitness(solutionTabou)));
         }
 
 
         //Creation CSV a partir de la liste "donnees"
         //premier parametre modifiable afin d'indiquer le nom du CSV
         ecritureCSV csv = new ecritureCSV("test", donnees);
+
         Instant end=Instant.now();
-        double time= (Duration.between(start,end).toMillis())/nbTest;
+        double time= (Duration.between(start,end).toMillis());
+        double timeAvg=time/nbTest;
         System.out.println(new Date());
-        System.out.println("temps moyen d'execution "+time);
+        System.out.println("temps d'execution "+time+" temps moyen"+timeAvg);
     }
 
 

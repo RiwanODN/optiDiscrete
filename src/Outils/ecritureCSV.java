@@ -7,7 +7,7 @@ import java.util.ArrayList;
 public class ecritureCSV {
 
     private String nomfichier;
-    private ArrayList<Integer> donnees;
+    private ArrayList<String> donnees;
 
     public ecritureCSV(String nomfichier, ArrayList donnees) {
         this.nomfichier = nomfichier;
@@ -23,7 +23,7 @@ public class ecritureCSV {
 
         FileWriter csvWriter = new FileWriter(this.nomfichier + ".csv");
 
-        for (int rowData : this.donnees) {
+        for (String rowData : this.donnees) {
             csvWriter.append(rowData + " ");
             csvWriter.append("\n");
         }

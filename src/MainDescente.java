@@ -42,7 +42,8 @@ public class MainDescente {
         Collections.shuffle(solutionAleatoireList);
 
         //Liste qui contiendra les différentes fitness calculées lors des tests, afin de créer un CSV, pour des études statistiques
-        ArrayList<Integer> donnees = new ArrayList<>();
+        ArrayList<String> donnees = new ArrayList<>();
+        donnees.add("Fitness Initiale;Fitness Finale;Delta");
 
         //Instanciation du Descente avec les matrices
         Descente Descente = new Descente(lecteur.getDistances(), lecteur.getPoids());
@@ -60,6 +61,7 @@ public class MainDescente {
             //Affichage solution initiale
             System.out.println("Solution initiale : ");
             MainDescente.afficherSolution(solutionAleatoireList.stream().mapToInt(Integer::intValue).toArray());
+            fitnessInitiale=Descente.calculerFitness(solutionAleatoireList.stream().mapToInt(Integer::intValue).toArray());
             System.out.println("Fitness : " + Descente.calculerFitness(solutionAleatoireList.stream().mapToInt(Integer::intValue).toArray()));
 
             //Solution du Descente
@@ -72,7 +74,7 @@ public class MainDescente {
             MainDescente.afficherSolution(solutionRecuitSimule);
             System.out.println("fitness du Descente : " +  Descente.calculerFitness(solutionRecuitSimule));
 
-            donnees.add(Descente.calculerFitness(solutionRecuitSimule));
+            donnees.add(fitnessInitiale+";"+Descente.calculerFitness(solutionRecuitSimule)+";"+(fitnessInitiale-Descente.calculerFitness(solutionRecuitSimule)));
         }
 
 
@@ -82,9 +84,10 @@ public class MainDescente {
         System.out.println(new Date());
 
         Instant end=Instant.now();
-        double time= (Duration.between(start,end).toMillis())/nbTest;
+        double time= (Duration.between(start,end).toMillis());
+        double timeAvg=time/nbTest;
         System.out.println(new Date());
-        System.out.println("temps moyen d'execution "+time);
+        System.out.println("temps d'execution "+time+" temps moyen"+timeAvg);
     }
 
 
